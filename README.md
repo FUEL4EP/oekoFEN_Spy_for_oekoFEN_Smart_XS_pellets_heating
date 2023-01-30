@@ -4,7 +4,9 @@ set-up and customization of an oekoFEN-spy Raspi 3B+ server for observing an oek
 
 
 
+## 
+
 
 ## under construction
 
-## more to follow soon
+## coming soon
