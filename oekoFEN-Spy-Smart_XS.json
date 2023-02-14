@@ -1398,6 +1398,7 @@
         "type": "influxdb",
         "uid": "QH1T0Jp4z"
       },
+      "description": "gemessen am Außensensor der Heizung",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1410,7 +1411,7 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 5,
+            "fillOpacity": 14,
             "gradientMode": "scheme",
             "hideFrom": {
               "legend": false,
@@ -1423,7 +1424,7 @@
             "scaleDistribution": {
               "type": "linear"
             },
-            "showPoints": "never",
+            "showPoints": "auto",
             "spanNulls": true,
             "stacking": {
               "group": "A",
@@ -1433,6 +1434,7 @@
               "mode": "off"
             }
           },
+          "decimals": 1,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -1442,62 +1444,50 @@
                 "value": null
               },
               {
-                "color": "text",
-                "value": 30
+                "color": "#BA43A9",
+                "value": -15
               },
               {
-                "color": "dark-blue",
-                "value": 52
+                "color": "#E24D42",
+                "value": -10
+              },
+              {
+                "color": "#1F78C1",
+                "value": -5
+              },
+              {
+                "color": "#6ED0E0",
+                "value": 0
               },
               {
                 "color": "semi-dark-green",
-                "value": 56
+                "value": 5
               },
               {
-                "color": "semi-dark-orange",
-                "value": 62
+                "color": "#EAB839",
+                "value": 10
               },
               {
-                "color": "semi-dark-red",
-                "value": 64
+                "color": "#EF843C",
+                "value": 15
               },
               {
-                "color": "semi-dark-purple",
-                "value": 66
-              },
-              {
-                "color": "text",
-                "value": 68
+                "color": "red",
+                "value": 20
               }
             ]
           },
           "unit": "celsius"
         },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Soll"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "dark-red",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          }
-        ]
+        "overrides": []
       },
       "gridPos": {
-        "h": 7,
+        "h": 8,
         "w": 12,
         "x": 0,
         "y": 10
       },
-      "id": 46,
+      "id": 74,
       "options": {
         "legend": {
           "calcs": [
@@ -1508,14 +1498,13 @@
           "showLegend": true
         },
         "tooltip": {
-          "mode": "multi",
+          "mode": "single",
           "sort": "none"
         }
       },
-      "pluginVersion": "9.3.2",
       "targets": [
         {
-          "alias": "Warmwasser Ist",
+          "alias": "Außentemperatur",
           "datasource": {
             "type": "influxdb",
             "uid": "QH1T0Jp4z"
@@ -1529,7 +1518,7 @@
             },
             {
               "params": [
-                "null"
+                "linear"
               ],
               "type": "fill"
             }
@@ -1543,124 +1532,20 @@
             [
               {
                 "params": [
-                  "ww1_L_ontemp_act"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "last"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "bereich",
-              "operator": "=",
-              "value": "ww1"
-            }
-          ]
-        },
-        {
-          "alias": "Soll",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "QH1T0Jp4z"
-          },
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "hide": false,
-          "measurement": "oekofen",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "B",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "ww1_L_temp_set"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "last"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "bereich",
-              "operator": "=",
-              "value": "ww1"
-            }
-          ]
-        },
-        {
-          "alias": "Aussentemperatur",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "QH1T0Jp4z"
-          },
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "hide": true,
-          "measurement": "oekofen",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "SELECT last(\"system_L_ambient\") FROM \"oekofen\" WHERE (\"bereich\" = 'system') AND $timeFilter GROUP BY time($__interval) fill(null)",
-          "rawQuery": true,
-          "refId": "C",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
                   "system_L_ambient"
                 ],
                 "type": "field"
               },
               {
                 "params": [],
-                "type": "last"
+                "type": "mean"
               }
             ]
           ],
-          "tags": [
-            {
-              "key": "bereich",
-              "operator": "=",
-              "value": "system"
-            }
-          ]
+          "tags": []
         }
       ],
-      "title": "Warmwassertemperatur",
+      "title": "Außentemperatur",
       "type": "timeseries"
     },
     {
@@ -2320,11 +2205,11 @@
         "type": "influxdb",
         "uid": "QH1T0Jp4z"
       },
-      "description": "",
+      "description": "gemessen am Außensensor der Heizung",
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "continuous-GrYlRd"
+            "mode": "thresholds"
           },
           "custom": {
             "axisCenteredZero": false,
@@ -2333,20 +2218,16 @@
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 13,
+            "fillOpacity": 14,
             "gradientMode": "scheme",
             "hideFrom": {
-              "graph": false,
               "legend": false,
               "tooltip": false,
               "viz": false
             },
             "lineInterpolation": "smooth",
-            "lineStyle": {
-              "fill": "solid"
-            },
-            "lineWidth": 2,
-            "pointSize": 8,
+            "lineWidth": 3,
+            "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
             },
@@ -2360,6 +2241,7 @@
               "mode": "off"
             }
           },
+          "decimals": 1,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -2369,28 +2251,36 @@
                 "value": null
               },
               {
-                "color": "light-yellow",
-                "value": 45
-              },
-              {
-                "color": "#EF843C",
-                "value": 50
+                "color": "#BA43A9",
+                "value": -15
               },
               {
                 "color": "#E24D42",
-                "value": 55
+                "value": -10
               },
               {
-                "color": "semi-dark-red",
-                "value": 60
-              },
-              {
-                "color": "dark-purple",
-                "value": 70
+                "color": "#1F78C1",
+                "value": -5
               },
               {
                 "color": "#6ED0E0",
-                "value": 80
+                "value": 0
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 5
+              },
+              {
+                "color": "#EAB839",
+                "value": 10
+              },
+              {
+                "color": "#EF843C",
+                "value": 15
+              },
+              {
+                "color": "red",
+                "value": 20
               }
             ]
           },
@@ -2402,11 +2292,10 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 17
+        "y": 18
       },
-      "id": 29,
+      "id": 75,
       "options": {
-        "graph": {},
         "legend": {
           "calcs": [
             "lastNotNull"
@@ -2416,14 +2305,13 @@
           "showLegend": true
         },
         "tooltip": {
-          "mode": "multi",
+          "mode": "single",
           "sort": "none"
         }
       },
-      "pluginVersion": "7.5.5",
       "targets": [
         {
-          "alias": "Kesseltemperatur Ist",
+          "alias": "24h gleitender Mittelwert der Außentemperatur",
           "datasource": {
             "type": "influxdb",
             "uid": "QH1T0Jp4z"
@@ -2437,77 +2325,42 @@
             },
             {
               "params": [
-                "null"
+                "none"
               ],
               "type": "fill"
             }
           ],
-          "hide": false,
           "measurement": "oekofen",
           "orderByTime": "ASC",
           "policy": "default",
+          "query": "SELECT moving_average(mean(\"system_L_ambient\"), 360) FROM \"oekofen\" WHERE time > $__from GROUP BY time($__interval)\n",
+          "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
           "select": [
             [
               {
                 "params": [
-                  "pe1_L_temp_act"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "last"
-              }
-            ]
-          ],
-          "tags": []
-        },
-        {
-          "alias": "Kesseltemperatur Soll",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "QH1T0Jp4z"
-          },
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "hide": false,
-          "measurement": "oekofen",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "B",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "pe1_L_temp_set"
+                  "system_L_ambient"
                 ],
                 "type": "field"
               },
               {
                 "params": [],
                 "type": "mean"
+              },
+              {
+                "params": [
+                  40
+                ],
+                "type": "moving_average"
               }
             ]
           ],
           "tags": []
         }
       ],
-      "title": "Kesseltemperatur",
+      "title": "24h gleitender Mittelwert der Außentemperatur",
       "type": "timeseries"
     },
     {
@@ -2527,7 +2380,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "semi-dark-green",
@@ -2646,7 +2500,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -2749,7 +2604,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -2852,7 +2708,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -2994,222 +2851,6 @@
         "type": "influxdb",
         "uid": "QH1T0Jp4z"
       },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "fixedColor": "dark-red",
-            "mode": "fixed"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 1,
-            "drawStyle": "line",
-            "fillOpacity": 57,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "graph": false,
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "stepBefore",
-            "lineStyle": {
-              "fill": "solid"
-            },
-            "lineWidth": 4,
-            "pointSize": 8,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": true,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "decimals": 0,
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "red",
-                "value": 5
-              },
-              {
-                "color": "#EAB839",
-                "value": 90
-              },
-              {
-                "color": "#6ED0E0",
-                "value": 100
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "FeuerraumTemp"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "super-light-orange",
-                  "mode": "fixed"
-                }
-              },
-              {
-                "id": "unit",
-                "value": "celsius"
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 12,
-        "x": 0,
-        "y": 25
-      },
-      "id": 25,
-      "options": {
-        "graph": {},
-        "legend": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "7.5.5",
-      "targets": [
-        {
-          "alias": "Modulation",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "QH1T0Jp4z"
-          },
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "measurement": "oekofen",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "SELECT last(\"pe1_L_modulation\") FROM \"oekofen\" WHERE (\"bereich\" = 'pe1') AND $timeFilter GROUP BY time($__interval) fill(null)",
-          "rawQuery": true,
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "pe1_L_modulation"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "last"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "bereich",
-              "operator": "=",
-              "value": "pe1"
-            }
-          ]
-        },
-        {
-          "alias": "FeuerraumTemp",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "QH1T0Jp4z"
-          },
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "hide": false,
-          "measurement": "oekofen",
-          "orderByTime": "ASC",
-          "policy": "default",
-          "refId": "B",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "pe1_L_frt_temp_act"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "last"
-              }
-            ]
-          ],
-          "tags": [
-            {
-              "key": "bereich",
-              "operator": "=",
-              "value": "pe1"
-            }
-          ]
-        }
-      ],
-      "title": "Leistung Modulation / Feuerraumtemperatur",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "QH1T0Jp4z"
-      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -3222,7 +2863,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -3312,6 +2954,276 @@
         "type": "influxdb",
         "uid": "QH1T0Jp4z"
       },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 5,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineWidth": 3,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "text",
+                "value": 30
+              },
+              {
+                "color": "dark-blue",
+                "value": 52
+              },
+              {
+                "color": "semi-dark-green",
+                "value": 56
+              },
+              {
+                "color": "semi-dark-orange",
+                "value": 62
+              },
+              {
+                "color": "semi-dark-red",
+                "value": 64
+              },
+              {
+                "color": "semi-dark-purple",
+                "value": 66
+              },
+              {
+                "color": "text",
+                "value": 68
+              }
+            ]
+          },
+          "unit": "celsius"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Soll"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "dark-red",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 26
+      },
+      "id": 46,
+      "options": {
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "alias": "Warmwasser Ist",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "QH1T0Jp4z"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "oekofen",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "ww1_L_ontemp_act"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "bereich",
+              "operator": "=",
+              "value": "ww1"
+            }
+          ]
+        },
+        {
+          "alias": "Soll",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "QH1T0Jp4z"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "hide": false,
+          "measurement": "oekofen",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "B",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "ww1_L_temp_set"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "bereich",
+              "operator": "=",
+              "value": "ww1"
+            }
+          ]
+        },
+        {
+          "alias": "Aussentemperatur",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "QH1T0Jp4z"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "hide": true,
+          "measurement": "oekofen",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT last(\"system_L_ambient\") FROM \"oekofen\" WHERE (\"bereich\" = 'system') AND $timeFilter GROUP BY time($__interval) fill(null)",
+          "rawQuery": true,
+          "refId": "C",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "system_L_ambient"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "bereich",
+              "operator": "=",
+              "value": "system"
+            }
+          ]
+        }
+      ],
+      "title": "Warmwassertemperatur",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "QH1T0Jp4z"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -3325,7 +3237,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -3479,7 +3392,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -3582,7 +3496,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -3724,147 +3639,6 @@
         "type": "influxdb",
         "uid": "QH1T0Jp4z"
       },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 9,
-            "gradientMode": "scheme",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "smooth",
-            "lineWidth": 2,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "semi-dark-blue",
-                "value": 3
-              },
-              {
-                "color": "#6ED0E0",
-                "value": 4.1
-              },
-              {
-                "color": "#EAB839",
-                "value": 6
-              },
-              {
-                "color": "semi-dark-orange",
-                "value": 9
-              },
-              {
-                "color": "semi-dark-red",
-                "value": 12
-              }
-            ]
-          },
-          "unit": "kwatt"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 31
-      },
-      "id": 70,
-      "options": {
-        "legend": {
-          "calcs": [
-            "last"
-          ],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "alias": "Heizleistung",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "QH1T0Jp4z"
-          },
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            },
-            {
-              "params": [
-                "null"
-              ],
-              "type": "fill"
-            }
-          ],
-          "orderByTime": "ASC",
-          "policy": "default",
-          "query": "SELECT mean(\"pe1_L_modulation\")   /100 * $max_heating_power_of_smart_XS * $correction_factor_heating_power FROM \"oekofen\" WHERE  $timeFilter GROUP BY time(4m)",
-          "rawQuery": true,
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "value"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "mean"
-              }
-            ]
-          ],
-          "tags": []
-        }
-      ],
-      "title": "Heizleistung",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "QH1T0Jp4z"
-      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -3877,7 +3651,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "semi-dark-red",
@@ -3992,7 +3767,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -4082,6 +3858,205 @@
         "type": "influxdb",
         "uid": "QH1T0Jp4z"
       },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 13,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "graph": false,
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 2,
+            "pointSize": 8,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "text",
+                "value": 45
+              },
+              {
+                "color": "light-yellow",
+                "value": 50
+              },
+              {
+                "color": "#EF843C",
+                "value": 55
+              },
+              {
+                "color": "#E24D42",
+                "value": 60
+              },
+              {
+                "color": "semi-dark-red",
+                "value": 65
+              },
+              {
+                "color": "dark-purple",
+                "value": 70
+              },
+              {
+                "color": "#6ED0E0",
+                "value": 75
+              }
+            ]
+          },
+          "unit": "celsius"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 33
+      },
+      "id": 29,
+      "options": {
+        "graph": {},
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "7.5.5",
+      "targets": [
+        {
+          "alias": "Kesseltemperatur Ist",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "QH1T0Jp4z"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "hide": false,
+          "measurement": "oekofen",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "pe1_L_temp_act"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              }
+            ]
+          ],
+          "tags": []
+        },
+        {
+          "alias": "Kesseltemperatur Soll",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "QH1T0Jp4z"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "hide": false,
+          "measurement": "oekofen",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "B",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "pe1_L_temp_set"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": []
+        }
+      ],
+      "title": "Kesseltemperatur",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "QH1T0Jp4z"
+      },
       "description": "Minuten mit Modulation >10 zählen und in 4min-Blöcken addieren.",
       "fieldConfig": {
         "defaults": {
@@ -4094,7 +4069,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -4185,24 +4161,24 @@
         "type": "influxdb",
         "uid": "QH1T0Jp4z"
       },
-      "description": "0.05 g/kWh",
+      "description": "Laufzeit h * 7.8kW / 4.9kg/kW * €213€/tonne",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
-          "decimals": 1,
+          "decimals": 2,
           "mappings": [],
-          "max": 2,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
-          "unit": "massg"
+          "unit": "€"
         },
         "overrides": []
       },
@@ -4212,7 +4188,7 @@
         "x": 18,
         "y": 35
       },
-      "id": 40,
+      "id": 44,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
@@ -4231,7 +4207,7 @@
       "pluginVersion": "9.3.6",
       "targets": [
         {
-          "alias": "Brennerlaufzeit",
+          "alias": "Kosten",
           "datasource": {
             "type": "influxdb",
             "uid": "QH1T0Jp4z"
@@ -4247,7 +4223,7 @@
           "measurement": "heizung",
           "orderByTime": "ASC",
           "policy": "4Weeks",
-          "query": "SELECT mean(\"pe1_L_modulation\")   * $max_heating_power_of_smart_XS * $sampling_interval / 60 / 100 * $correction_factor_heating_power * $fine_dust_per_kWh FROM \"oekofen\" WHERE \"pe1_L_modulation\" >10 AND  $timeFilter GROUP BY time(1m)",
+          "query": "SELECT mean(\"pe1_L_modulation\")   * $max_heating_power_of_smart_XS / $useful_heat_of_1_kg_pellets * $sampling_interval / 60  / 100 * $correction_factor_heating_power * $cost_of_pellets_per_kg  FROM \"oekofen\" WHERE \"pe1_L_modulation\" >10 AND  $timeFilter GROUP BY time(1m)",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -4280,7 +4256,7 @@
           "tags": []
         }
       ],
-      "title": "Feinstaub im sel. Zeitraum",
+      "title": "Kosten im Zeitraum ( 0.56€ pro kg)",
       "type": "stat"
     },
     {
@@ -4288,7 +4264,7 @@
         "type": "influxdb",
         "uid": "QH1T0Jp4z"
       },
-      "description": "Laufzeit h *7.8kW * 25g/kWh / 84g/km",
+      "description": "84g/km",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -4300,7 +4276,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -4390,7 +4367,7 @@
         "type": "influxdb",
         "uid": "QH1T0Jp4z"
       },
-      "description": "Laufzeit h * 7.8kW / 4.9kg/kW * €213€/tonne",
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -4402,7 +4379,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           },
@@ -4411,12 +4389,12 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 4,
+        "h": 3,
         "w": 6,
         "x": 18,
         "y": 38
       },
-      "id": 44,
+      "id": 49,
       "options": {
         "colorMode": "value",
         "graphMode": "none",
@@ -4484,8 +4462,577 @@
           "tags": []
         }
       ],
-      "title": "Kosten im Zeitraum ( 0.56€ pro kg)",
+      "timeFrom": "1d",
+      "title": "Kosten letzte 24h ( $cost_of_pellets_per_kg € pro kg)",
       "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "QH1T0Jp4z"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "dark-red",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 1,
+            "drawStyle": "line",
+            "fillOpacity": 57,
+            "gradientMode": "opacity",
+            "hideFrom": {
+              "graph": false,
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "stepBefore",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 4,
+            "pointSize": 8,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 0,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 5
+              },
+              {
+                "color": "#EAB839",
+                "value": 90
+              },
+              {
+                "color": "#6ED0E0",
+                "value": 100
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "FeuerraumTemp"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "super-light-orange",
+                  "mode": "fixed"
+                }
+              },
+              {
+                "id": "unit",
+                "value": "celsius"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 41
+      },
+      "id": 25,
+      "options": {
+        "graph": {},
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "7.5.5",
+      "targets": [
+        {
+          "alias": "Modulation",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "QH1T0Jp4z"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "measurement": "oekofen",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT last(\"pe1_L_modulation\") FROM \"oekofen\" WHERE (\"bereich\" = 'pe1') AND $timeFilter GROUP BY time($__interval) fill(null)",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "pe1_L_modulation"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "bereich",
+              "operator": "=",
+              "value": "pe1"
+            }
+          ]
+        },
+        {
+          "alias": "FeuerraumTemp",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "QH1T0Jp4z"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "hide": false,
+          "measurement": "oekofen",
+          "orderByTime": "ASC",
+          "policy": "default",
+          "refId": "B",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "pe1_L_frt_temp_act"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "last"
+              }
+            ]
+          ],
+          "tags": [
+            {
+              "key": "bereich",
+              "operator": "=",
+              "value": "pe1"
+            }
+          ]
+        }
+      ],
+      "title": "Leistung Modulation / Feuerraumtemperatur",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "QH1T0Jp4z"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 0,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "massg"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 6,
+        "x": 12,
+        "y": 41
+      },
+      "id": 38,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.3.6",
+      "repeat": "CO2_emission_per_kWh",
+      "repeatDirection": "v",
+      "targets": [
+        {
+          "alias": "CO2-Ausstoss",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "QH1T0Jp4z"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            }
+          ],
+          "measurement": "heizung",
+          "orderByTime": "ASC",
+          "policy": "4Weeks",
+          "query": "SELECT mean(\"pe1_L_modulation\")   * $max_heating_power_of_smart_XS * $sampling_interval / 60 / 100 * $correction_factor_heating_power * $CO2_emission_per_kWh FROM \"oekofen\" WHERE \"pe1_L_modulation\" >10 AND  $timeFilter GROUP BY time(1m)",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "pe1_L_modulation"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "count"
+              },
+              {
+                "params": [
+                  "1m"
+                ],
+                "type": "non_negative_derivative"
+              },
+              {
+                "params": [
+                  "*4"
+                ],
+                "type": "math"
+              }
+            ]
+          ],
+          "tags": []
+        }
+      ],
+      "title": "CO2 Ausstoss im selektierten Zeitraum ( $CO2_emission_per_kWh g CO2  pro kWh)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "QH1T0Jp4z"
+      },
+      "description": "0.05 g/kWh",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 1,
+          "mappings": [],
+          "max": 2,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "massg"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 6,
+        "x": 12,
+        "y": 44
+      },
+      "id": 40,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "sum"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.3.6",
+      "targets": [
+        {
+          "alias": "Brennerlaufzeit",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "QH1T0Jp4z"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            }
+          ],
+          "measurement": "heizung",
+          "orderByTime": "ASC",
+          "policy": "4Weeks",
+          "query": "SELECT mean(\"pe1_L_modulation\")   * $max_heating_power_of_smart_XS * $sampling_interval / 60 / 100 * $correction_factor_heating_power * $fine_dust_per_kWh FROM \"oekofen\" WHERE \"pe1_L_modulation\" >10 AND  $timeFilter GROUP BY time(1m)",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "pe1_L_modulation"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "count"
+              },
+              {
+                "params": [
+                  "1m"
+                ],
+                "type": "non_negative_derivative"
+              },
+              {
+                "params": [
+                  "*4"
+                ],
+                "type": "math"
+              }
+            ]
+          ],
+          "tags": []
+        }
+      ],
+      "title": "Feinstaub im selektierten Zeitraum",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "QH1T0Jp4z"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 9,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "semi-dark-blue",
+                "value": 3
+              },
+              {
+                "color": "#6ED0E0",
+                "value": 4.1
+              },
+              {
+                "color": "#EAB839",
+                "value": 6
+              },
+              {
+                "color": "semi-dark-orange",
+                "value": 9
+              },
+              {
+                "color": "semi-dark-red",
+                "value": 12
+              }
+            ]
+          },
+          "unit": "kwatt"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 47
+      },
+      "id": 70,
+      "options": {
+        "legend": {
+          "calcs": [
+            "last"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "alias": "Heizleistung",
+          "datasource": {
+            "type": "influxdb",
+            "uid": "QH1T0Jp4z"
+          },
+          "groupBy": [
+            {
+              "params": [
+                "$__interval"
+              ],
+              "type": "time"
+            },
+            {
+              "params": [
+                "null"
+              ],
+              "type": "fill"
+            }
+          ],
+          "orderByTime": "ASC",
+          "policy": "default",
+          "query": "SELECT mean(\"pe1_L_modulation\")   /100 * $max_heating_power_of_smart_XS * $correction_factor_heating_power FROM \"oekofen\" WHERE  $timeFilter GROUP BY time(4m)",
+          "rawQuery": true,
+          "refId": "A",
+          "resultFormat": "time_series",
+          "select": [
+            [
+              {
+                "params": [
+                  "value"
+                ],
+                "type": "field"
+              },
+              {
+                "params": [],
+                "type": "mean"
+              }
+            ]
+          ],
+          "tags": []
+        }
+      ],
+      "title": "Heizleistung",
+      "type": "timeseries"
     },
     {
       "datasource": {
@@ -4534,7 +5081,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -4550,7 +5098,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 39
+        "y": 55
       },
       "id": 58,
       "options": {
@@ -4676,211 +5224,6 @@
         "type": "influxdb",
         "uid": "QH1T0Jp4z"
       },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "decimals": 2,
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              }
-            ]
-          },
-          "unit": "€"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 6,
-        "x": 18,
-        "y": 42
-      },
-      "id": 49,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "sum"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "text": {},
-        "textMode": "auto"
-      },
-      "pluginVersion": "9.3.6",
-      "targets": [
-        {
-          "alias": "Kosten",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "QH1T0Jp4z"
-          },
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            }
-          ],
-          "measurement": "heizung",
-          "orderByTime": "ASC",
-          "policy": "4Weeks",
-          "query": "SELECT mean(\"pe1_L_modulation\")   * $max_heating_power_of_smart_XS / $useful_heat_of_1_kg_pellets * $sampling_interval / 60  / 100 * $correction_factor_heating_power * $cost_of_pellets_per_kg  FROM \"oekofen\" WHERE \"pe1_L_modulation\" >10 AND  $timeFilter GROUP BY time(1m)",
-          "rawQuery": true,
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "pe1_L_modulation"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "count"
-              },
-              {
-                "params": [
-                  "1m"
-                ],
-                "type": "non_negative_derivative"
-              },
-              {
-                "params": [
-                  "*4"
-                ],
-                "type": "math"
-              }
-            ]
-          ],
-          "tags": []
-        }
-      ],
-      "timeFrom": "1d",
-      "title": "Kosten letzte 24h ( $cost_of_pellets_per_kg € pro kg)",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "QH1T0Jp4z"
-      },
-      "description": "Laufzeit in Stunden * 10.3kW * 9g/kWh (SIR 2007)",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "decimals": 0,
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              }
-            ]
-          },
-          "unit": "massg"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 6,
-        "x": 18,
-        "y": 46
-      },
-      "id": 38,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "sum"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "text": {},
-        "textMode": "auto"
-      },
-      "pluginVersion": "9.3.6",
-      "targets": [
-        {
-          "alias": "CO2-Ausstoss",
-          "datasource": {
-            "type": "influxdb",
-            "uid": "QH1T0Jp4z"
-          },
-          "groupBy": [
-            {
-              "params": [
-                "$__interval"
-              ],
-              "type": "time"
-            }
-          ],
-          "measurement": "heizung",
-          "orderByTime": "ASC",
-          "policy": "4Weeks",
-          "query": "SELECT mean(\"pe1_L_modulation\")   * $max_heating_power_of_smart_XS * $sampling_interval / 60 / 100 * $correction_factor_heating_power * $CO2_emission_per_kWh FROM \"oekofen\" WHERE \"pe1_L_modulation\" >10 AND  $timeFilter GROUP BY time(1m)",
-          "rawQuery": true,
-          "refId": "A",
-          "resultFormat": "time_series",
-          "select": [
-            [
-              {
-                "params": [
-                  "pe1_L_modulation"
-                ],
-                "type": "field"
-              },
-              {
-                "params": [],
-                "type": "count"
-              },
-              {
-                "params": [
-                  "1m"
-                ],
-                "type": "non_negative_derivative"
-              },
-              {
-                "params": [
-                  "*4"
-                ],
-                "type": "math"
-              }
-            ]
-          ],
-          "tags": []
-        }
-      ],
-      "title": "CO2 Ausstoss im sel. Zeitraum ( $CO2_emission_per_kWh g CO2  pro kWh)",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "QH1T0Jp4z"
-      },
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -4921,7 +5264,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -4937,7 +5281,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 47
+        "y": 63
       },
       "id": 60,
       "options": {
@@ -5049,7 +5393,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -5065,7 +5410,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 55
+        "y": 71
       },
       "id": 62,
       "options": {
@@ -5228,7 +5573,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -5244,7 +5590,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 63
+        "y": 79
       },
       "id": 64,
       "options": {
@@ -5350,7 +5696,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -5366,7 +5713,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 71
+        "y": 87
       },
       "id": 72,
       "options": {
@@ -5451,7 +5798,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               }
             ]
           }
@@ -5462,7 +5810,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 79
+        "y": 95
       },
       "id": 22,
       "links": [],
@@ -5846,7 +6194,7 @@
           "text": "9.0",
           "value": "9.0"
         },
-        "description": "Kohlendioxidemmision per kWh",
+        "description": "Kohlendioxidemmision per kWh, siehe Umweltbundesamt: Emissionsbilanz erneuerbarer\nEnergieträger\nBestimmung der vermiedenen Emissionen im Jahr 2021\n",
         "hide": 2,
         "includeAll": false,
         "multi": false,
@@ -5854,11 +6202,11 @@
         "options": [
           {
             "selected": true,
-            "text": "9.0",
-            "value": "9.0"
+            "text": "17",
+            "value": "17"
           }
         ],
-        "query": "9.0",
+        "query": "17",
         "skipUrlSync": false,
         "type": "custom"
       },
@@ -5908,6 +6256,6 @@
   "timezone": "",
   "title": "Ökofen",
   "uid": "hMBh7egRz",
-  "version": 97,
+  "version": 118,
   "weekStart": ""
 }
