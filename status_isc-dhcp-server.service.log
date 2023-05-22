@@ -1,0 +1,19 @@
+● isc-dhcp-server.service - LSB: DHCP server
+     Loaded: loaded (/etc/init.d/isc-dhcp-server; generated)
+     Active: active (running) since Sun 2023-05-21 21:02:42 CEST; 12h ago
+       Docs: man:systemd-sysv-generator(8)
+      Tasks: 4 (limit: 839)
+        CPU: 351ms
+     CGroup: /system.slice/isc-dhcp-server.service
+             └─644 /usr/sbin/dhcpd -4 -q -cf /etc/dhcp/dhcpd.conf eth0
+
+Mai 21 21:02:40 RaspiOekofenSmartXS dhcpd[644]: Internet Systems Consortium DHCP Server 4.4.1
+Mai 21 21:02:40 RaspiOekofenSmartXS dhcpd[644]: Copyright 2004-2018 Internet Systems Consortium.
+Mai 21 21:02:40 RaspiOekofenSmartXS dhcpd[644]: All rights reserved.
+Mai 21 21:02:40 RaspiOekofenSmartXS dhcpd[644]: For info, please visit https://www.isc.org/software/dhcp/
+Mai 21 21:02:40 RaspiOekofenSmartXS dhcpd[644]: Wrote 0 deleted host decls to leases file.
+Mai 21 21:02:40 RaspiOekofenSmartXS dhcpd[644]: Wrote 0 new dynamic host decls to leases file.
+Mai 21 21:02:40 RaspiOekofenSmartXS dhcpd[644]: Wrote 0 leases to leases file.
+Mai 21 21:02:40 RaspiOekofenSmartXS dhcpd[644]: Server starting service.
+Mai 21 21:02:42 RaspiOekofenSmartXS isc-dhcp-server[603]: Starting ISC DHCPv4 server: dhcpd.
+Mai 21 21:02:42 RaspiOekofenSmartXS systemd[1]: Started LSB: DHCP server.

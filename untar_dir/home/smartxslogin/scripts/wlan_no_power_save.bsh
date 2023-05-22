@@ -1,0 +1,2 @@
+#!/bin/bash
+/sbin/iwconfig wlan0 power off

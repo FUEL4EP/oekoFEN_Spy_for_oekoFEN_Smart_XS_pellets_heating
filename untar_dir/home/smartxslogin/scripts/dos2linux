@@ -1,0 +1,19 @@
+#! /bin/sh
+#dos2linux: eliminiert CR-Zeichen
+if [ $# -eq 0 ]; then # als Filter verwenden
+  /usr/bin/tr -d '\r'
+elif [ $# -eq 1 ]; then # eine Datei bearbeiten
+  /bin/mv $1 $1.$$
+  /usr/bin/tr -d '\r' < $1.$$ > $1
+  /bin/rm $1.$$
+elif [ $# -eq 2 ]; then # zwei Dateien bearbeiten
+  /usr/bin/tr -d '\r' < $1 > $2
+else
+  cat << EOF
+
+dos2linux: elimiert CR-Zeichen in Textdateien
+Verwendung: dos2linux <datei>
+            dos2linux <quelldatei> <zieldatei>
+            dos2linux < <quelldatei> > <zieldatei>
+EOF
+fi

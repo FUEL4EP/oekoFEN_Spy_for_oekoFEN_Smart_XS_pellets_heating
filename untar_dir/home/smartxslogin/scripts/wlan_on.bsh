@@ -1,0 +1,4 @@
+#!/bin/bash
+/sbin/ip link set dev wlan0 up
+/sbin/wpa_supplicant -B -i wlan0 -c /etc/wpa_supplicant/wpa_supplicant.conf
+/sbin/dhclient wlan0

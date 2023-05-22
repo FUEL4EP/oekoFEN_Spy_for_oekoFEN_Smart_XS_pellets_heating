@@ -1,0 +1,224 @@
+#!/bin/sh
+# iptables Firewall Skript for Raspi Ökofen_SPY
+# interface wlan0 attached to blue network (WiFi)
+# interface eth0 attached to Ökofen Smart XS (wired)
+
+IPTABLES="/sbin/iptables"
+
+#<hostname_of_your_laptop>
+#OEKOFEN_SMART_XS_IP="<MY_LAPTOP_IP_ADDRESS>"
+
+#Smart XS
+OEKOFEN_SMART_XS_IP="<MY_OEKOFEN_PELLETRONIC_IP_ADDRESS>"
+
+#Raspi 3B+
+RASPI_ROUTER_IP="<MY_STATIC_WLAN0_ADDRESS>"
+
+GREEN_NETWORK="<MY_LOCAL_LAN_SUBNET>"  # adapt to your local wired LAN subnet
+BLUE_NETWORK="<MY_LOCAL_WLAN_SUBNET>"   # adapt to your local Wifi subnet
+NETWORK_PORT="wlan0"
+BRIDGED_PORT="eth0"
+NTP_SERVER="194.25.134.196"
+DNS_SERVER_1="8.8.8.8"
+DNS_SERVER_2="8.8.4.4"
+DNS_SERVER_IPF="<MY_DNS_SERVER>"
+DHCP_SERVER="<MY_ROUTER_IP_ADDRESS>"    # adapt to your local router's DHCP server
+DHCP_BROADCAST="<MY_DHCP_BROADCAST_ADDRESS>" # adapt to your local router's DHCP server
+MDNS_REQUEST="224.0.0.251"
+
+echo "Loading Firewall ..."
+
+# Purge/Flush 
+# ~~~~~~~~~~~
+# Alle Regeln löschen
+$IPTABLES -F 
+$IPTABLES -t nat -F
+$IPTABLES -t mangle -F
+
+# Alle Regelketten löschen
+$IPTABLES -X 
+$IPTABLES -t nat -X
+$IPTABLES -t mangle -X
+
+# Regeln
+# ~~~~~~
+# IPv4 Default
+$IPTABLES -P INPUT DROP
+$IPTABLES -P FORWARD DROP
+$IPTABLES -P OUTPUT ACCEPT
+
+# Regeln
+# ~~~~~~
+# NAT PREROUTING, POSTROUTING, OUTPUT
+# IPv4 Default
+$IPTABLES -t nat -P PREROUTING ACCEPT
+$IPTABLES -t nat -P POSTROUTING ACCEPT
+$IPTABLES -t nat -P OUTPUT ACCEPT
+
+# Loopback-Schnittstelle Verkehr erlauben
+$IPTABLES -A INPUT -i lo -j ACCEPT 
+$IPTABLES -A OUTPUT -o lo -j ACCEPT
+
+# allow outgoing connections
+$IPTABLES -A OUTPUT -j ACCEPT
+
+# Debug (comment in normal operation)
+#$IPTABLES -A INPUT -j LOG --log-prefix "  DEBUG INPUT => "
+#$IPTABLES -A FORWARD -j LOG --log-prefix "  DEBUG FORWARD => "
+
+# ICMP-Antwortpakete erlauben
+$IPTABLES -A INPUT -p icmp -m icmp --icmp-type echo-reply -j ACCEPT 
+$IPTABLES -A INPUT -p icmp -m icmp --icmp-type echo-request -j ACCEPT 
+$IPTABLES -A INPUT -p icmp -m icmp --icmp-type destination-unreachable -j ACCEPT
+$IPTABLES -A FORWARD -p icmp -m icmp --icmp-type echo-reply -j ACCEPT 
+$IPTABLES -A FORWARD -p icmp -m icmp --icmp-type echo-request -j ACCEPT 
+$IPTABLES -A FORWARD -p icmp -m icmp --icmp-type destination-unreachable -j ACCEPT
+
+#Drop bogus packets
+$IPTABLES -A INPUT -m state --state INVALID -j DROP
+$IPTABLES -A FORWARD -m state --state INVALID -j DROP
+$IPTABLES -A OUTPUT -m state --state INVALID -j DROP
+$IPTABLES -t filter -A INPUT -p tcp --tcp-flags FIN,ACK FIN -j DROP
+$IPTABLES -t filter -A INPUT -p tcp --tcp-flags ACK,PSH PSH -j DROP
+$IPTABLES -t filter -A INPUT -p tcp --tcp-flags ACK,URG URG -j DROP
+$IPTABLES -t filter -A INPUT -p tcp --tcp-flags SYN,FIN SYN,FIN -j DROP
+$IPTABLES -t filter -A INPUT -p tcp --tcp-flags SYN,RST SYN,RST -j DROP
+$IPTABLES -t filter -A INPUT -p tcp --tcp-flags FIN,RST FIN,RST -j DROP
+$IPTABLES -t filter -A INPUT -p tcp --tcp-flags ALL FIN,PSH,URG -j DROP
+
+
+# accept packets of an existing connection
+$IPTABLES -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# allow ssh connections
+$IPTABLES -A INPUT -p tcp -m state --state NEW --dport 22 -j ACCEPT
+
+
+#allow http, https 
+$IPTABLES -A INPUT -p tcp --dport 80 -i ${NETWORK_PORT} -j ACCEPT   #http
+$IPTABLES -A INPUT -p tcp --dport 443 -i ${NETWORK_PORT} -j ACCEPT  #https
+$IPTABLES -A INPUT -p tcp --dport 3000 -i ${NETWORK_PORT} -j ACCEPT #grafana
+$IPTABLES -A INPUT -p tcp --dport 4321 -i ${NETWORK_PORT} -j ACCEPT #Pelletronic
+
+#allow ftp from blue and green network
+$IPTABLES -A INPUT -p tcp --src ${BLUE_NETWORK}/24  -d ${RASPI_ROUTER_IP} --dport 21 -j ACCEPT
+$IPTABLES -A INPUT -p tcp --src ${GREEN_NETWORK}/24  -d ${RASPI_ROUTER_IP} --dport 21 -j ACCEPT
+
+#accept everything from ${BRIDGED_PORT}
+$IPTABLES -A INPUT -i ${BRIDGED_PORT} -j ACCEPT
+
+#accept DHCP from ${DHCP_SERVER}
+$IPTABLES  -A INPUT -p udp -i ${NETWORK_PORT} -s ${DHCP_SERVER} --dport 67 -j ACCEPT
+
+#drop DHCP broadcast from ${RASPI_ROUTER_IP}
+$IPTABLES  -A INPUT -p udp -i ${NETWORK_PORT} -s ${RASPI_ROUTER_IP} --dport 67 -j DROP
+
+#iptables -A INPUT -i ${NETWORK_PORT} -m conntrack --ctstate RELATED,ESTABLISHED -j LOG --log-prefix "  INFO: EXISTING CONNECTION ==>  "
+$IPTABLES -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+
+#accept forward of port 80 access from blue interface ${NETWORK_PORT}
+#$IPTABLES -A FORWARD -p tcp --dport 80 -i ${NETWORK_PORT} -j ACCEPT
+
+# The following two rules allow the inbound FTP connection
+$IPTABLES -A INPUT -p tcp --sport 21 -m state --state ESTABLISHED -j ACCEPT
+$IPTABLES -A OUTPUT -p tcp --dport 21 -m state --state NEW,ESTABLISHED -j ACCEPT
+# The next 2 lines allow active ftp connections
+$IPTABLES -A INPUT -p tcp --sport 20 -m state --state ESTABLISHED,RELATED -j ACCEPT
+$IPTABLES -A OUTPUT -p tcp --dport 20 -m state --state ESTABLISHED -j ACCEPT
+# These last two rules allow for passive transfers
+$IPTABLES -A INPUT -p tcp --sport 1024: --dport 1024: -m state --state ESTABLISHED -j ACCEPT
+$IPTABLES -A OUTPUT -p tcp --sport 1024: --dport 1024: -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+#accept Multicast DNS requests
+$IPTABLES -A INPUT -p udp -s ${BLUE_NETWORK}/4 --sport 5353 -d 224.0.0.251 --dport 5353 -j ACCEPT
+
+#accept DHCP broadcasts from blue network
+$IPTABLES -A INPUT -p udp -i ${NETWORK_PORT} -d ${DHCP_BROADCAST} --dport 137 -j ACCEPT
+$IPTABLES -A INPUT -p udp -i ${NETWORK_PORT} -d ${DHCP_BROADCAST} --sport 138 --dport 138 -j ACCEPT
+
+#drop Broadcasts from blue network 
+$IPTABLES -A INPUT -p udp -d 255.255.255.255 -i ${NETWORK_PORT} -j DROP
+
+#ACCEPT DHCPDISCOVER from ${NETWORK_PORT}
+$IPTABLES -A INPUT -p udp -s 0.0.0.0 -d 255.255.255.255 --dport 67 --sport 68 -i ${NETWORK_PORT} -j ACCEPT
+$IPTABLES -A INPUT -p udp -s 0.0.0.0 -d 255.255.255.255 --dport 1716 --sport 1716 -i ${NETWORK_PORT} -j ACCEPT
+
+#DROP Dropbox traffic
+$IPTABLES -A INPUT -p udp -i ${NETWORK_PORT} -d ${DHCP_BROADCAST} --sport 17500 --dport 17500 -j DROP
+
+#drop mDNS requests
+$IPTABLES -A INPUT -p udp -d ${MDNS_REQUEST} --dport 5353 --sport 5353 -i ${NETWORK_PORT} -j DROP
+
+#log everything else which comes in from ${NETWORK_PORT} (= blue network)
+$IPTABLES -A INPUT -i ${NETWORK_PORT} -j LOG --log-prefix "  ATTACK: INPUT DROP physdev to ${NETWORK_PORT} other than allowed ports ==>  "
+$IPTABLES -A INPUT -i ${NETWORK_PORT} -j DROP
+
+$IPTABLES -A INPUT -d 224.0.0.22 -p igmp -j ACCEPT
+$IPTABLES -A FORWARD -d 224.0.0.22 -p igmp -j ACCEPT
+
+#accept everything from ${BRIDGED_PORT}
+$IPTABLES -A INPUT -i ${BRIDGED_PORT} -j ACCEPT
+
+
+#accept ntp traffic from of Ökofen_Smart_XS
+$IPTABLES -A FORWARD -p udp -s ${OEKOFEN_SMART_XS_IP} -d ${NTP_SERVER} -i ${BRIDGED_PORT} -j ACCEPT
+$IPTABLES -A FORWARD -p udp -d ${OEKOFEN_SMART_XS_IP} -s ${NTP_SERVER} -i ${NETWORK_PORT} -j ACCEPT
+
+#accept DNS traffic from Google DNS servers
+#$IPTABLES -A FORWARD -p udp -s ${DNS_SERVER_1} --sport 53 -d ${OEKOFEN_SMART_XS_IP} -i ${NETWORK_PORT} -j ACCEPT
+#$IPTABLES -A FORWARD -p udp -s ${DNS_SERVER_2} --sport 53 -d ${OEKOFEN_SMART_XS_IP} -i ${NETWORK_PORT} -j ACCEPT
+#$IPTABLES -A FORWARD -p udp -d ${DNS_SERVER_1} --dport 53 -s ${OEKOFEN_SMART_XS_IP} -i ${BRIDGED_PORT} -j ACCEPT
+#$IPTABLES -A FORWARD -p udp -d ${DNS_SERVER_2} --dport 53 -s ${OEKOFEN_SMART_XS_IP} -i ${BRIDGED_PORT} -j ACCEPT
+
+
+#accept DNS traffic from IPFIRE router, both udp and tcp
+$IPTABLES -A FORWARD -p udp -s ${DNS_SERVER_IPF} --sport 53 -d ${OEKOFEN_SMART_XS_IP} -i ${NETWORK_PORT} -j ACCEPT
+$IPTABLES -A FORWARD -p udp -d ${DNS_SERVER_IPF} --dport 53 -s ${OEKOFEN_SMART_XS_IP} -i ${BRIDGED_PORT} -j ACCEPT
+$IPTABLES -A FORWARD -p tcp -s ${DNS_SERVER_IPF} --sport 53 -d ${OEKOFEN_SMART_XS_IP} -i ${NETWORK_PORT} -j ACCEPT
+$IPTABLES -A FORWARD -p tcp -d ${DNS_SERVER_IPF} --dport 53 -s ${OEKOFEN_SMART_XS_IP} -i ${BRIDGED_PORT} -j ACCEPT
+#accept DNS traffic from DHCP_SERVER udp
+$IPTABLES -A INPUT -p udp -s ${DHCP_SERVER} --sport 53 -d ${OEKOFEN_SMART_XS_IP} -i ${NETWORK_PORT} -j ACCEPT
+
+#ACCEPT DHCPDISCOVER from ${BRIDGED_PORT}
+$IPTABLES -A INPUT -p udp -s 0.0.0.0 -d 255.255.255.255 --dport 67 --sport 68 -i ${BRIDGED_PORT} -j ACCEPT
+
+#accept Simple Service Discovery Protocol (SSDP) for detectingi UPnP devices (see DokuWiki)
+$IPTABLES -A FORWARD -p udp -s ${OEKOFEN_SMART_XS_IP} -d 239.255.255.250 --dport 1900 -i ${BRIDGED_PORT} -j ACCEPT
+
+#accept DHCP 
+$IPTABLES -A FORWARD -p udp -s ${DNS_SERVER_IPF} --sport 53 -d ${OEKOFEN_SMART_XS_IP} -i ${NETWORK_PORT} -j ACCEPT
+$IPTABLES -A FORWARD -p udp -s ${OEKOFEN_SMART_XS_IP} --sport 68 -d ${DNS_SERVER_IPF} --dport 67 -i ${BRIDGED_PORT} -j ACCEPT
+
+#accept forward traffic of ipset list 'my_whitelist'
+#$IPTABLES -A FORWARD  -s ${OEKOFEN_SMART_XS_IP} -i ${BRIDGED_PORT} -m set --match-set my_whitelist dst -j LOG --log-prefix " whitelisted: "
+$IPTABLES -A FORWARD  -s ${OEKOFEN_SMART_XS_IP} -i ${BRIDGED_PORT} -m set --match-set my_whitelist dst -j ACCEPT
+$IPTABLES -A FORWARD  -d ${OEKOFEN_SMART_XS_IP} -i ${NETWORK_PORT} -m set --match-set my_whitelist src -j ACCEPT
+
+$IPTABLES -A FORWARD -i ${NETWORK_PORT} -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+$IPTABLES -A FORWARD -d ${OEKOFEN_SMART_XS_IP} -i ${NETWORK_PORT} -j LOG --log-prefix "  ATTACK: FORWARD to Ökofen_Smart_XS "
+$IPTABLES -A FORWARD -d ${OEKOFEN_SMART_XS_IP} -i ${NETWORK_PORT} -j DROP
+
+#accept forward traffic from port 80 of Ökofen_Smart_XS
+#$IPTABLES -A FORWARD -p tcp --sport 80 -s ${OEKOFEN_SMART_XS_IP} -i ${BRIDGED_PORT} -j ACCEPT
+
+# Packet masquerading
+$IPTABLES -t nat -A POSTROUTING -o ${NETWORK_PORT} -j SNAT --to-source ${RASPI_ROUTER_IP}
+
+ 
+# Alle Pakete ordentlich zurückweisen
+#$IPTABLES -A INPUT -j LOG --log-prefix "  WARNING: INPUT REQ. ANALYSIS ==>  "
+$IPTABLES -A INPUT  -j LOG --log-prefix "  ERROR: INPUT DROP ==>  "
+$IPTABLES -A INPUT -p tcp -j REJECT --reject-with tcp-reset
+$IPTABLES -A INPUT -j REJECT --reject-with icmp-port-unreachable
+#$IPTABLES -A FORWARD  -j LOG --log-prefix "  WARNING: FORWARD REQ. ANALYSIS ==>  "
+$IPTABLES -A FORWARD  -j LOG --log-prefix "  ERROR: FORWARD DROP ==>  "
+#$IPTABLES -A FORWARD  -j ACCEPT
+$IPTABLES -A FORWARD -j REJECT
+
+
+
+
+
+echo "... done!"
+

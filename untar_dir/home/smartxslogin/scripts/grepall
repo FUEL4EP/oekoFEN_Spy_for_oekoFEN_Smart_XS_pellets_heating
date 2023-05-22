@@ -1,0 +1,7 @@
+#!/bin/bash
+# ./grepall
+# Ausgabe der Namen (Pfade) aller normalen Dateien in einer Verzeichnisstruktur
+# die ein bestimmtes Textmuster enthalten.
+# Verzeichnisstruktur und Textmuster sind als Parameter anzugeben.
+
+find . -type f -exec grep -q $1  {} \;  -print 2> /dev/null

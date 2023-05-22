@@ -1,0 +1,182 @@
+#!/bin/bash
+
+usage()
+{
+  echo
+  echo "This is a bash script for globally replacing strings recursively in a directory"
+  echo
+  echo "Usage: $0 [-i|-y|-h] [ -d DIR  -s SEARCH_STRING -r REPLACEMENT_STRING ]"
+  echo
+  echo "Command line options are:"
+  echo
+  echo "-i                                               : interactive input of parameters"
+  echo "-d DIR  -s SEARCH_STRING -r REPLACEMENT_STRING   : parameters are entered in the command line"
+  echo "-y                                               : continue without confirmations"
+  echo "-h|?                                             : usage"
+  echo
+  exit 2
+}
+
+set_variable()
+{
+  local varname=$1
+  shift
+  if [ -z "${!varname}" ]; then
+    eval "$varname=\"$@\""
+  else
+    echo "Error: $varname already set"
+    usage
+  fi
+}
+
+#########################
+# Main script starts here
+
+unset COMMAND_LINE_PARAMETERS_SET NOCONFIRM ACTION DIR SEARCH_STRING REPLACEMENT_STRING
+
+while getopts 'ihy?d:s:r:' c
+do
+  case $c in
+    i) set_variable ACTION INTERACTIVE ;;
+    d) set_variable DIR $OPTARG
+       COMMAND_LINE_PARAMETERS_SET=YES ;;
+    s) set_variable SEARCH_STRING $OPTARG
+       COMMAND_LINE_PARAMETERS_SET=YES ;;
+    r) set_variable REPLACEMENT_STRING $OPTARG
+       COMMAND_LINE_PARAMETERS_SET=YES ;;
+    y) NOCONFIRM=YES ;;
+    h|?) usage ;; esac
+done
+
+[ -z "$ACTION" ] &&  [ -z "$COMMAND_LINE_PARAMETERS_SET" ] && usage
+
+
+[ "$ACTION" == INTERACTIVE ] && {
+
+  # interactive mode selected
+
+  [ "$COMMAND_LINE_PARAMETERS_SET" == YES ]  && {
+
+    echo
+    echo "ERROR: must not use command line parameters in interactive mode"
+    usage
+  }
+
+}
+
+[ "$COMMAND_LINE_PARAMETERS_SET" == YES ] && {
+
+  # command line parameter set
+
+  [ -z "${DIR}" ]  && {
+    echo
+    echo "ERROR: Missing command line parameter -d DIR"
+    usage
+  }
+  [ -z "${SEARCH_STRING}" ]  && {
+    echo
+    echo "ERROR: Missing command line parameter -s SEARCH_STRING"
+    usage
+  }
+    [ -z "${REPLACEMENT_STRING}" ]  && {
+    echo
+    echo "ERROR: Missing command line parameter -r REPLACEMENT_STRING"
+    usage
+  }
+
+  if [[ ! -d "${DIR}" ]]; then
+     echo
+     echo "ERROR: Directory ${DIR} does not exist!"
+     echo
+     usage
+  fi
+
+}
+
+
+[ "$ACTION" == INTERACTIVE ] && {
+
+  echo "Info: Recursively replace strings in a directory"
+  echo " "
+  read -p "Input: Please Enter Path : " DIR
+  echo " "
+  echo "Info: Entered path of search directory is '${DIR}' "
+  echo " "
+  if [ -d "${DIR}" ];
+  then
+    echo "Info: ${DIR} directory exists."
+  else
+	echo "ERROR: ${DIR} directory does not exist ! Exiting! "
+	echo " "
+	exit 1
+  fi
+  echo " "
+  read -p "Input: Please Enter search string : " SEARCH_STRING
+  read -p "Input: Please Enter replacement string  : " REPLACEMENT_STRING
+}
+
+echo " "
+echo "Info: Will search recursively in directory '${DIR}' for string '${SEARCH_STRING}'"
+echo "Info: and replace it globally by the replacement string '${REPLACEMENT_STRING}'"
+
+
+
+echo "Info: Change now to the specified directory '${DIR}'"
+pushd ${DIR} >& /dev/null
+echo "Info: Searching now for search string '${SEARCH_STRING}' in  directory '${DIR}'"
+echo " "
+echo "Info: Search string '${SEARCH_STRING}' has been found in the following files: "
+echo " "
+/usr/bin/grep -Irl "${SEARCH_STRING}"
+echo " "
+echo "Info: Found occurances of search string '${SEARCH_STRING}':"
+echo " "
+/usr/bin/grep -Irl "${SEARCH_STRING}" | xargs grep  "${SEARCH_STRING}"
+
+[ -z "$NOCONFIRM" ] && {
+
+echo " "
+read -r -p "Continue? [y/N] " response
+if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
+then
+    echo " "
+    echo "Info: Continuing with dry run of sed replacements .."
+    echo " "
+else
+    echo " "
+    echo "Info: Exiting on request! "
+    echo " "
+    exit 1
+fi
+
+echo
+echo "Info: Dry run of sed :"
+echo
+
+grep -Irl "${SEARCH_STRING}" . | xargs -t sed -n "s/${SEARCH_STRING}/${REPLACEMENT_STRING}/gp"
+
+echo " "
+read -r -p "Continue with replacement? [y/N] " response
+if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
+then
+    echo " "
+    echo "Info: Continuing with recursive replacements now .."
+    echo " "
+else
+    echo " "
+    echo "Info: Exiting on request! "
+    echo " "
+    exit 1
+fi
+
+}
+echo
+echo "Info: The following commands are executed now:"
+echo
+grep -Irl "${SEARCH_STRING}" . | xargs -t sed  -i "s/${SEARCH_STRING}/${REPLACEMENT_STRING}/g"
+
+echo
+echo "Done"
+echo
+
+exit 0

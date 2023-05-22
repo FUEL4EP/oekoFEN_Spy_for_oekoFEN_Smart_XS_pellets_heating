@@ -1,0 +1,81 @@
+#!/bin/bash
+
+if (( $EUID != 0 )); then
+    echo
+    echo "ERROR: Please run this bash script as root or 'sudo ./patch_installation.bsh'"
+    echo
+    echo "exiting!"
+    echo
+    exit 2
+fi
+
+
+# some definitions; change if you choose a non-default setting
+# keep changes consitent to 'customize_installation.bsh'
+#================================================================================#
+# Please customize the entries below according to your network and system set-up
+#
+# Start of customization section
+#
+#================================================================================#
+THIS_SCRIPT_BASE_DIR=$(cd "$(dirname "$0")"; pwd)
+MY_UNTAR_DIR_MOD="untar_dir_mod"
+MY_LOGIN_NAME="smartxslogin"
+#================================================================================#
+#
+# End of customization section
+#
+#================================================================================#
+
+pushd "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR_MOD}"/ >& /dev/null
+sudo tar cvf "${THIS_SCRIPT_BASE_DIR}"/customization_root_patches.tar *
+popd >& /dev/null
+
+echo
+echo "The root customization tar file is ready now: '${THIS_SCRIPT_BASE_DIR}/customization_root_patches.tar'"
+echo
+
+echo " "
+read -r -p "Continue to patch now the root directory '/' with this tar file? [y/N] " response
+if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
+then
+    echo " "
+    echo "Info: Continue to patch the root directory '/' .."
+    echo " "
+else
+    echo " "
+    echo "Info: Exiting on request! "
+    echo " "
+    exit 1
+fi
+
+pushd / >& /dev/null
+
+echo
+echo "Info: Current directory is $PWD"
+echo
+echo "Will now execute 'sudo tar xvf ${THIS_SCRIPT_BASE_DIR}/customization_root_patches.tar'"
+echo
+
+echo " "
+read -r -p "Continue to patch now the root directory '/' with this tar file? [y/N] " response
+if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
+then
+    echo " "
+    echo "Info: Patching now the root directory '/' .."
+    echo " "
+else
+    echo " "
+    echo "Info: Exiting on request! "
+    echo " "
+    exit 1
+fi
+
+sudo tar xvf ${THIS_SCRIPT_BASE_DIR}/customization_root_patches.tar 
+
+echo
+echo "Info: Patch of root directory '/' has been done, please check it before continuing"
+echo
+
+popd >& /dev/null
+

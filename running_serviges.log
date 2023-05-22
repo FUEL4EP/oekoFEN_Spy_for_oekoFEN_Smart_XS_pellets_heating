@@ -1,0 +1,31 @@
+  UNIT                         LOAD   ACTIVE SUB     DESCRIPTION
+  cron.service                 loaded active running Regular background program processing daemon
+  dbus.service                 loaded active running D-Bus System Message Bus
+  dhcpcd.service               loaded active running DHCP Client Daemon
+  getty@tty1.service           loaded active running Getty on tty1
+  grafana-server.service       loaded active running Grafana instance
+  influxdb.service             loaded active running InfluxDB is an open-source, distributed, time series database
+  isc-dhcp-server.service      loaded active running LSB: DHCP server
+  lightdm.service              loaded active running Light Display Manager
+  ModemManager.service         loaded active running Modem Manager
+  my_firewall.service          loaded active running LSB: starts my_filewall
+  packagekit.service           loaded active running PackageKit Daemon
+  polkit.service               loaded active running Authorization Manager
+  rng-tools-debian.service     loaded active running LSB: rng-tools (Debian variant)
+  rsyslog.service              loaded active running System Logging Service
+  rtkit-daemon.service         loaded active running RealtimeKit Scheduling Policy Service
+  serial-getty@ttyAMA0.service loaded active running Serial Getty on ttyAMA0
+  ssh.service                  loaded active running OpenBSD Secure Shell server
+  systemd-journald.service     loaded active running Journal Service
+  systemd-logind.service       loaded active running User Login Management
+  systemd-timesyncd.service    loaded active running Network Time Synchronization
+  systemd-udevd.service        loaded active running Rule-based Manager for Device Events and Files
+  udisks2.service              loaded active running Disk Manager
+  unattended-upgrades.service  loaded active running Unattended Upgrades Shutdown
+  user@1000.service            loaded active running User Manager for UID 1000
+  wpa_supplicant.service       loaded active running WPA supplicant
+
+LOAD   = Reflects whether the unit definition was properly loaded.
+ACTIVE = The high-level unit activation state, i.e. generalization of SUB.
+SUB    = The low-level unit activation state, values depend on unit type.
+25 loaded units listed.

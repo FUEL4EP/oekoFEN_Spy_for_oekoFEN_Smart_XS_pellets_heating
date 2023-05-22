@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if (( $EUID == 0 )); then
+    echo
+    echo "ERROR: Please do NOT run this bash script as sudo or root, but as a normal user 'bash ./git_clone.bsh'!"
+    echo
+    echo "exiting!"
+    echo
+    exit 2
+fi
+
+
+cd ${HOME}  
+sudo apt install git
+[ -d ${HOME}/oekoFEN_Spy_for_oekoFEN_Smart_XS_pellets_heating ] && {
+  echo
+  echo "Info: Moving existing directory '${HOME}/oekoFEN_Spy_for_oekoFEN_Smart_XS_pellets_heating' to '${HOME}/oekoFEN_Spy_for_oekoFEN_Smart_XS_pellets_heating.bck'"
+  echo
+  /usr/bin/mv  ${HOME}/oekoFEN_Spy_for_oekoFEN_Smart_XS_pellets_heating  ${HOME}/oekoFEN_Spy_for_oekoFEN_Smart_XS_pellets_heating.bck
+}
+git clone https://github.com/FUEL4EP/oekoFEN_Spy_for_oekoFEN_Smart_XS_pellets_heating.git
+
+echo
+echo "Info: The Github repository has been cloned to the directory '${HOME}/oekoFEN_Spy_for_oekoFEN_Smart_XS_pellets_heating'"
+echo
+

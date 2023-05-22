@@ -1,0 +1,12 @@
+# interfaces(5) file used by ifup(8) and ifdown(8)
+# Include files from /etc/network/interfaces.d:
+#source /etc/network/interfaces.d/*
+allow-hotplug eth0
+iface eth0 inet static
+address <MY_STATIC_ETH0_ADDRESS>
+netmask 255.255.255.0
+allow-hotplug wlan0
+auto wlan0
+iface wlan0 inet static
+address <MY_STATIC_WLAN0_ADDRESS>
+netmask 255.255.255.0

@@ -1,0 +1,5 @@
+#!/bin/bash
+/sbin/iwconfig wlan0 power off
+/sbin/ifconfig wlan0 down
+/usr/sbin/iwconfig wlan0 txpower 16
+/sbin/ifconfig wlan0 up

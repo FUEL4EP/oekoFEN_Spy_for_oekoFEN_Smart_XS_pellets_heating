@@ -1,0 +1,19 @@
+#! /bin/sh
+#linux2dos: fügt an jedem Zeilenende ein CR-Zeichen ein
+if [ $# -eq 0 ]; then # als Filter verwenden
+  /bin/sed -e s/$//
+elif [ $# -eq 1 ]; then # eine Datei bearbeiten
+  /bin/mv $1 $1.$$
+  /bin/sed -e s/$// < $1.$$ > $1
+  /bin/rm $1.$$
+elif [ $# -eq 2 ]; then # zwei Dateien bearbeiten
+  /bin/sed -e s/$// < $1 > $2
+else
+  cat << EOF
+
+linux2dos: fügt an jedem Zeilenende ein CR-Zeichen ein
+Verwendung: linux2dos <datei>
+            linux2dos <quelldatei> <zieldatei>
+            linux2dos < <quelldatei> > <zieldatei>
+EOF
+fi

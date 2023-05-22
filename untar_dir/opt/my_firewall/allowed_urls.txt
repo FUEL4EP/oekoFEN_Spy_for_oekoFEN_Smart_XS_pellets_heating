@@ -1,0 +1,4 @@
+my.oekofen.info
+weather.oekofen.info
+oekofen.info
+messagequeue62.xortex.net

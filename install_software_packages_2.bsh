@@ -1,0 +1,46 @@
+#!/bin/bash
+#
+# patch script for setting up a oekofen_spy proxy server
+#
+# (C) FUEL4EP 2023-05-18
+#
+# based on Ökofen_Spy
+# https://nc-x.com/oekofen-spy (C) Peter Fürle
+# https://gitlab.com/p3605/oekofen-spy/-/tree/main (C) Peter Fürle
+
+# based on install.sh at https://gitlab.com/p3605/oekofen-spy/-/tree/main
+# plus some fixes, e.g. add sudo
+
+sudo apt update
+
+## Install influxdb
+sudo apt -y install influxdb
+sudo apt -y install influxdb-client
+
+## Once installed, start the influxdb service.
+sudo systemctl start influxdb
+
+# Configure the InfluxDB Server
+influx -execute "create database oekofen"
+influx -execute "SHOW DATABASES"
+influx -execute "CREATE USER pellematic WITH PASSWORD 'smart' WITH ALL PRIVILEGES"
+influx -execute "grant all privileges on oekofen to pellematic"
+
+# Install Grafana for Pi
+wget -q -O - https://packages.grafana.com/gpg.key | sudo apt-key add -
+sudo /usr/bin/rm /etc/apt/sources.list.d/grafana.list
+echo "deb https://packages.grafana.com/oss/deb stable main" | sudo tee -a /etc/apt/sources.list.d/grafana.list
+sudo apt install -y grafana
+### Enable the Grafana server
+sudo /bin/systemctl daemon-reload
+sudo /bin/systemctl enable grafana-server
+### Start the Grafana server
+sudo /bin/systemctl start grafana-server
+
+sudo apt -y install python3-influxdb
+
+# Install Python dependencies
+pip3 install python-dotenv
+
+# Restart
+sudo shutdown -r now

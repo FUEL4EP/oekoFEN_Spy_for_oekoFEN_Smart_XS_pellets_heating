@@ -1,0 +1,35 @@
+#! /bin/bash
+
+echo " "
+echo "start my_firewall"
+
+pushd /opt/my_firewall >& /dev/null
+
+/bin/bash /opt/my_firewall/iptables_flush.bsh
+
+echo ".. flushed previous iptable chains"
+
+cp -p /opt/my_firewall/create_and_update_myip_whitelist_forward_queue.bsh.start /opt/my_firewall/create_and_update_myip_whitelist_forward_queue.bsh
+
+sleep 2s
+
+/bin/bash /opt/my_firewall/create_and_update_myip_whitelist_forward_queue.bsh
+
+echo ".. created whitelist"
+
+sleep 2s
+
+/bin/bash /opt/my_firewall/simple_firewall.bsh
+
+echo ".. started simple_firewall.bsh"
+
+
+sleep 2s
+
+echo ".. starting resolve.py"
+
+/usr/bin/python3  /opt/my_firewall/resolve.py >& /dev/null
+
+echo ".. finished resolve.py"
+
+popd

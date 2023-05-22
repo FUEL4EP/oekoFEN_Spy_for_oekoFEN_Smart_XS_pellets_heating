@@ -1,0 +1,47 @@
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides:          my_firewall
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: starts my_filewall
+# Description:       starts my_filewall
+### END INIT INFO
+
+(( EUID )) && echo .You need to have root priviliges.. && exit 1
+
+RETVAL=0
+
+start () {
+   echo -n "Starting my_firewall"
+   /bin/bash /opt/my_firewall/my_firewall.bsh &
+   RETVAL=$?
+}
+
+stop () {
+   echo -n "Stopping my_firewall"
+   /usr/bin/pkill -f "/bin/bash /opt/my_firewall/my_firewall.bsh"
+   /usr/bin/pkill -f "/usr/bin/python3 /opt/my_firewall/resolve.py"
+   RETVAL=$?
+}
+
+case "$1" in
+    start)
+      start
+  ;;
+    stop)
+      stop
+  ;;
+    restart)
+      stop
+      start
+  ;;
+    *)
+      echo "Usage: my_firewall {start|stop|restart}"
+      exit 1
+  ;;
+esac
+exit $RETVAL
+

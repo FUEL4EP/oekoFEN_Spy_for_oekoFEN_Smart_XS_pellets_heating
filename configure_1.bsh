@@ -1,0 +1,54 @@
+#!/bin/bash
+#
+# patch script for setting up a oekofen_spy proxy server
+#
+# (C) FUEL4EP 2023-05-18
+#
+# based on Ökofen_Spy
+# https://nc-x.com/oekofen-spy (C) Peter Fürle
+# https://gitlab.com/p3605/oekofen-spy/-/tree/main (C) Peter Fürle
+
+
+sudo sysctl -w net.ipv4.ip_forward=1
+
+sudo service isc-dhcp-server stop
+sudo service isc-dhcp-server start
+sudo systemctl status isc-dhcp-server.service
+sudo systemctl enable isc-dhcp-server
+
+sudo /etc/init.d/cron restart
+
+
+sudo systemctl enable my_firewall
+sudo /etc/init.d/my_firewall start
+
+#sudo update-rc.d dhcpcd enable
+#sudo systemctl enable dhcpcd
+
+sudo service ssh start
+sudo update-rc.d ssh defaults
+sudo systemctl enable ssh
+
+
+sudo systemctl disable  pulseaudio
+sudo systemctl disable cups-browsed
+sudo systemctl stop cups-browsed
+sudo systemctl disable cups
+sudo systemctl stop cups
+sudo systemctl disable bluetooth
+sudo systemctl stop bluetooth
+sudo systemctl disable avahi-daemon
+sudo systemctl stop avahi-daemon
+sudo systemctl disable triggerhappy
+sudo systemctl stop triggerhappy
+sudo systemctl --type service --state running
+
+sudo unattended-upgrade -d
+
+sudo systemctl disable dphys-swapfile
+sudo systemctl stop dphys-swapfile
+sudo systemctl status  dphys-swapfile
+
+sudo apt autoremove
+
+sudo reboot

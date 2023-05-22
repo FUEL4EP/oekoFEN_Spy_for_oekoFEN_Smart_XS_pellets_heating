@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+
+if (( $EUID != 0 )); then
+    echo
+    echo "ERROR: Please run this bash script as root or 'sudo ./customize_installation.bsh'"
+    echo
+    echo "exiting!"
+    echo
+    exit 2
+fi
+
+#================================================================================#
+# Please customize the entries below according to your network and system set-up #
+# Start of customization section                                                 #
+#================================================================================#
+MY_LOGIN_NAME="smartxslogin"
+THIS_SCRIPT_BASE_DIR=$(cd "$(dirname "$0")"; pwd)
+MY_UNTAR_DIR="untar_dir"
+MY_UNTAR_DIR_MOD="untar_dir_mod"
+MY_ROUTER_IP_ADDRESS="192.168.ddd.ddd"                # gateway of WLAN subnet
+MY_DNS_SERVER="192.168.ddd.ddd"                       # local DNS server !
+MY_STATIC_WLAN0_ADDRESS="192.168.ddd.ddd"
+MY_STATIC_ETH0_ADDRESS="192.168.ddd.ddd"
+MY_DHCP_BROADCAST_ADDRESS="192.168.ddd.255"
+MY_LOCAL_LAN_SUBNET="192.168.ddd.0"
+MY_LOCAL_WLAN_SUBNET="192.168.ddd.0"
+MY_OEKOFEN_PELLETRONIC_SUBNETWORK_BASE_ADDRESS="192.168.ddd.0"
+MY_OEKOFEN_PELLETRONIC_SUBNETWORK_BROADCAST_ADDRESS="192.168.ddd.ddd"
+MY_LAPTOP_IP_ADDRESS="192.168.ddd.ddd"                # laptop can be attached for test purposes to eth0 of Raspi
+MY_OEKOFEN_PELLETRONIC_IP_ADDRESS="192.168.ddd.ddd"   # IP address needs to be $MY_LAPTOP_IP_ADDRESS + 1
+MY_HOST_NAME_OF_LAPTOP="TEST_LAPTOP"
+MY_LAPTOPS_ETHERNET_MAC_ADDRESS="hh:hh:hh:hh:hh:hh"
+MY_PELLETROCNIC_ETHERNET_MAC_ADDRESS="hh:hh:hh:hh:hh:hh"
+MY_OEKOFEN_PELLETRONIC_JSON_PORT="dddd"
+MY_OEKOFEN_PELLETRONIC_JSON_PASSWORD="cccc"
+#================================================================================#
+# End of customization section                                                   #
+#================================================================================#
+
+
+echo
+echo "untaring the original patch database into folder \'${MY_UNTAR_DIR}\' .."
+echo
+
+mkdir "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR}"
+tar xvf patch.tar --strip-components=1 -C "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR}"
+
+echo
+echo "untaring the original patch database into folder \'${MY_UNTAR_DIR_MOD}\' .."
+echo
+
+mkdir "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR_MOD}"
+tar xvf patch.tar --strip-components=1 -C "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR_MOD}"
+
+sudo mv "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR_MOD}"/home/smartxslogin "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR_MOD}"/home/"${MY_LOGIN_NAME}"
+
+echo
+echo "replacing the customization strings recursively in folder \'${MY_UNTAR_DIR_MOD}\' .."
+echo
+
+sudo "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR}"/home/"${MY_LOGIN_NAME}"/scripts/replace_strings_recursively.bsh -d  "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR_MOD}" -s "<MY_LOCAL_LAN_SUBNET>" -r "${MY_LOCAL_LAN_SUBNET}" -y
+sudo "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR}"/home/"${MY_LOGIN_NAME}"/scripts/replace_strings_recursively.bsh -d  "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR_MOD}" -s "<MY_LOCAL_WLAN_SUBNET>" -r "${MY_LOCAL_WLAN_SUBNET}" -y
+sudo "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR}"/home/"${MY_LOGIN_NAME}"/scripts/replace_strings_recursively.bsh -d  "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR_MOD}" -s "<MY_DHCP_BROADCAST_ADDRESS>" -r "${MY_DHCP_BROADCAST_ADDRESS}" -y
+sudo "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR}"/home/"${MY_LOGIN_NAME}"/scripts/replace_strings_recursively.bsh -d  "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR_MOD}" -s "<MY_STATIC_WLAN0_ADDRESS>" -r "${MY_STATIC_WLAN0_ADDRESS}" -y
+sudo "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR}"/home/"${MY_LOGIN_NAME}"/scripts/replace_strings_recursively.bsh -d  "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR_MOD}" -s "<MY_ROUTER_IP_ADDRESS>" -r "${MY_ROUTER_IP_ADDRESS}" -y
+sudo "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR}"/home/"${MY_LOGIN_NAME}"/scripts/replace_strings_recursively.bsh -d  "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR_MOD}" -s "<MY_DNS_SERVER>" -r "${MY_DNS_SERVER}" -y
+sudo "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR}"/home/"${MY_LOGIN_NAME}"/scripts/replace_strings_recursively.bsh -d  "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR_MOD}" -s "<MY_STATIC_ETH0_ADDRESS>" -r "${MY_STATIC_ETH0_ADDRESS}" -y
+sudo "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR}"/home/"${MY_LOGIN_NAME}"/scripts/replace_strings_recursively.bsh -d  "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR_MOD}" -s "<MY_OEKOFEN_PELLETRONIC_SUBNETWORK_BASE_ADDRESS>" -r "${MY_OEKOFEN_PELLETRONIC_SUBNETWORK_BASE_ADDRESS}" -y
+sudo "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR}"/home/"${MY_LOGIN_NAME}"/scripts/replace_strings_recursively.bsh -d  "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR_MOD}" -s "<MY_OEKOFEN_PELLETRONIC_SUBNETWORK_BROADCAST_ADDRESS>" -r "${MY_OEKOFEN_PELLETRONIC_SUBNETWORK_BROADCAST_ADDRESS}" -y
+sudo "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR}"/home/"${MY_LOGIN_NAME}"/scripts/replace_strings_recursively.bsh -d  "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR_MOD}" -s "<MY_LAPTOP_IP_ADDRESS>" -r "${MY_LAPTOP_IP_ADDRESS}" -y
+sudo "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR}"/home/"${MY_LOGIN_NAME}"/scripts/replace_strings_recursively.bsh -d  "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR_MOD}" -s "<MY_OEKOFEN_PELLETRONIC_IP_ADDRESS>" -r "${MY_OEKOFEN_PELLETRONIC_IP_ADDRESS}" -y
+sudo "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR}"/home/"${MY_LOGIN_NAME}"/scripts/replace_strings_recursively.bsh -d  "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR_MOD}" -s "<MY_LAPTOPS_ETHERNET_MAC_ADDRESS>" -r "${MY_LAPTOPS_ETHERNET_MAC_ADDRESS}" -y
+sudo "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR}"/home/"${MY_LOGIN_NAME}"/scripts/replace_strings_recursively.bsh -d  "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR_MOD}" -s "<MY_HOST_NAME_OF_LAPTOP>" -r "${MY_HOST_NAME_OF_LAPTOP}" -y
+sudo "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR}"/home/"${MY_LOGIN_NAME}"/scripts/replace_strings_recursively.bsh -d  "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR_MOD}" -s "<MY_PELLETROCNIC_ETHERNET_MAC_ADDRESS>" -r "${MY_PELLETROCNIC_ETHERNET_MAC_ADDRESS}" -y
+sudo "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR}"/home/"${MY_LOGIN_NAME}"/scripts/replace_strings_recursively.bsh -d  "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR_MOD}" -s "<MY_OEKOFEN_PELLETRONIC_JSON_PORT>" -r "${MY_OEKOFEN_PELLETRONIC_JSON_PORT}" -y
+sudo "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR}"/home/"${MY_LOGIN_NAME}"/scripts/replace_strings_recursively.bsh -d  "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR_MOD}" -s "<MY_OEKOFEN_PELLETRONIC_JSON_PASSWORD>" -r "${MY_OEKOFEN_PELLETRONIC_JSON_PASSWORD}" -y
+
+echo
+echo "copying the customized Ökofen_Spy installation to '/home/${MY_LOGIN_NAME}' .. "
+echo
+
+/usr/bin/cp -rp "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR_MOD}"/oekofen-spy /home/"${MY_LOGIN_NAME}"
+
+echo
+echo "Done"
+echo

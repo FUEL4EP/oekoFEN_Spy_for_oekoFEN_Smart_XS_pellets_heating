@@ -1,0 +1,7 @@
+#!/bin/bash -f
+#Created on Saturday, 14. December 2019 08:34AM
+/usr/bin/sudo /sbin/ipset create -exist my_whitelist hash:ip
+#allowed URL my.oekofen.info
+/usr/bin/sudo /sbin/ipset -exist add my_whitelist 185.65.88.56
+#allowed URL oekofen.info
+/usr/bin/sudo /sbin/ipset -exist add my_whitelist 188.40.29.250

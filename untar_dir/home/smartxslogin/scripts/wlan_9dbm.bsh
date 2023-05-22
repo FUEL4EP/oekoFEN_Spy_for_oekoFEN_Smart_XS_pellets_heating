@@ -1,0 +1,2 @@
+#!/bin/bash
+/usr/sbin/iw wlan0 set txpower limit 900

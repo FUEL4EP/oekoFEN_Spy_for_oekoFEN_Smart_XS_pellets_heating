@@ -1,0 +1,71 @@
+#!/bin/bash
+#
+# patch script for setting up a oekofen_spy proxy server
+#
+# (C) FUEL4EP 2023-05-20
+#
+# based on Ökofen_Spy
+# https://nc-x.com/oekofen-spy (C) Peter Fürle
+# https://gitlab.com/p3605/oekofen-spy/-/tree/main (C) Peter Fürle
+
+if (( $EUID == 0 )); then
+    echo
+    echo "ERROR: Please do NOT run this bash script as sudo or root, but as a normal user 'bash ./install_software_packages_1.bsh'!"
+    echo
+    echo "exiting!"
+    echo
+    exit 2
+fi
+
+# some definitions; change if you choose a non-default setting
+# keep changes consitent to 'customize_installation.bsh'
+#================================================================================#
+# Please customize the entries below according to your network and system set-up
+#
+# Start of customization section                                                
+#
+#================================================================================#
+THIS_SCRIPT_BASE_DIR=$(cd "$(dirname "$0")"; pwd)
+MY_UNTAR_DIR_MOD="untar_dir_mod"
+MY_LOGIN_NAME="smartxslogin"
+#================================================================================#
+#
+# End of customization section                                                  
+#
+#================================================================================#
+
+
+echo
+echo "Info: Copy some configuration files to ${HOME} .."
+echo
+
+/usr/bin/cp "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR_MOD}"/home/"${MY_LOGIN_NAME}"/.bashrc ${HOME}/.bashrc
+/usr/bin/cp "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR_MOD}"/home/"${MY_LOGIN_NAME}"/.profile ${HOME}/.profile
+/usr/bin/cp "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR_MOD}"/home/"${MY_LOGIN_NAME}"/.bash_aliases ${HOME}/.bash_aliases
+/usr/bin/cp "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR_MOD}"/home/"${MY_LOGIN_NAME}"/.bash_aliases ${HOME}/.bash_aliases
+/usr/bin/cp -rp "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR_MOD}"/home/"${MY_LOGIN_NAME}"/.config ${HOME}
+/usr/bin/cp -rp "${THIS_SCRIPT_BASE_DIR}"/"${MY_UNTAR_DIR_MOD}"/home/"${MY_LOGIN_NAME}"/scripts ${HOME}
+
+echo
+echo "Info: Install necessary and uninstall unnecessary packages .."
+echo
+
+sudo apt install -y ssh
+
+sudo apt install -y sg3-utils lsscsi
+sudo apt install -y unattended-upgrades apt-listchanges
+
+sudo apt install -y isc-dhcp-server
+
+sudo apt install -y ghostwriter
+
+sudo apt install -y ipset
+
+sudo apt purge -y vlc
+sudo apt purge -y libreoffice
+sudo apt purge -y libreoffice*
+sudo apt purge -y libreoffice-writer
+sudo apt purge -y libreoffice-calc
+sudo apt purge -y libreoffice-calc/stable
+sudo apt autoremove -y
+

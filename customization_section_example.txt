@@ -1,0 +1,27 @@
+#================================================================================#
+# Please customize the entries below according to your network and system set-up #
+# Start of customization section                                                 #
+#================================================================================#
+MY_LOGIN_NAME="smartxslogin"
+THIS_SCRIPT_BASE_DIR=$(cd "$(dirname "$0")"; pwd)
+MY_UNTAR_DIR="untar_dir"
+MY_UNTAR_DIR_MOD="untar_dir_mod"
+MY_ROUTER_IP_ADDRESS="192.168.22.1"                # gateway of WLAN subnet
+MY_DNS_SERVER="192.168.21.1"                       # local DNS server !
+MY_STATIC_WLAN0_ADDRESS="192.168.22.45"
+MY_STATIC_ETH0_ADDRESS="192.168.44.1"
+MY_OEKOFEN_PELLETRONIC_SUBNETWORK_BASE_ADDRESS="192.168.44.0"
+MY_OEKOFEN_PELLETRONIC_SUBNETWORK_BROADCAST_ADDRESS="192.168.44.255"
+MY_DHCP_BROADCAST_ADDRESS="192.168.22.255"
+MY_LOCAL_LAN_SUBNET="192.168.21.0"
+MY_LOCAL_WLAN_SUBNET="192.168.22.0"
+MY_LAPTOP_IP_ADDRESS="192.168.44.2"                # laptop can be attached for test purposes to eth0 of Raspi
+MY_OEKOFEN_PELLETRONIC_IP_ADDRESS="192.168.44.3"   # IP address needs to be $MY_LAPTOP_IP_ADDRESS + 1
+MY_HOST_NAME_OF_LAPTOP="TEST_LAPTOP"
+MY_LAPTOPS_ETHERNET_MAC_ADDRESS="80:12:12:12:12:12"
+MY_PELLETROCNIC_ETHERNET_MAC_ADDRESS="00:12:12:12:12:12"
+MY_OEKOFEN_PELLETRONIC_JSON_PORT="8888"
+MY_OEKOFEN_PELLETRONIC_JSON_PASSWORD="abcd"
+#================================================================================#
+# End of customization section                                                   #
+#================================================================================#

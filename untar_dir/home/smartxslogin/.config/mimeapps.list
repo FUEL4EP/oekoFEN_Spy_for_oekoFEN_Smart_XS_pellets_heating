@@ -1,0 +1,5 @@
+[Added Associations]
+text/markdown=ghostwriter.desktop;
+
+[Default Applications]
+text/markdown=ghostwriter.desktop

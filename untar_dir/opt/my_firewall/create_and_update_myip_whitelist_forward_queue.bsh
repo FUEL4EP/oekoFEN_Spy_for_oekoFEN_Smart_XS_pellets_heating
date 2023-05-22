@@ -1,0 +1,13 @@
+#!/bin/bash -f
+#Created on Monday, 15. May 2023 07:02AM
+/usr/bin/sudo /sbin/ipset -F
+/usr/bin/sudo /sbin/ipset -X
+/usr/bin/sudo /sbin/ipset create -exist my_whitelist hash:ip
+#allowed URL my.oekofen.info
+/usr/bin/sudo /sbin/ipset -exist add my_whitelist 185.65.88.56
+#allowed URL weather.oekofen.info
+/usr/bin/sudo /sbin/ipset -exist add my_whitelist 185.65.88.56
+#allowed URL oekofen.info
+/usr/bin/sudo /sbin/ipset -exist add my_whitelist 188.40.29.250
+#allowed URL messagequeue62.xortex.net
+/usr/bin/sudo /sbin/ipset -exist add my_whitelist 185.65.88.57

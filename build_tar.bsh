@@ -1,0 +1,18 @@
+#!/bin/bash
+
+if (( $EUID != 0 )); then
+    echo
+    echo "ERROR: Please run this bash script as root or 'sudo ./build_tar.bsh'"
+    echo
+    echo "exiting!"
+    echo
+    exit 2
+fi
+
+sudo tar cvf ./patch.tar untar_dir/
+
+pushd ..
+
+sudo tar cvf oekoFEN_Spy_for_oekoFEN_Smart_XS_pellets_heating.tar oekoFEN_Spy_for_oekoFEN_Smart_XS_pellets_heating/
+
+popd

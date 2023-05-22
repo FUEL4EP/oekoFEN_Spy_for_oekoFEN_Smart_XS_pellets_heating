@@ -1,0 +1,4 @@
+#!/bin/bash
+/sbin/ip link set dev wlan0 down
+/sbin/dhclient wlan0 -r wlan0
+/usr/bin/pkill -f wpa_supplicant.conf
