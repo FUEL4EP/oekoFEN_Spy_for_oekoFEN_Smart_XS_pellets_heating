@@ -11,6 +11,9 @@ fi
 
 #================================================================================#
 # Please customize the entries below according to your network and system set-up #
+# Change below according to your system's and network's settings                 #
+#   d := digit [0-9]                                                             #
+#   c := character                                                               #
 # Start of customization section                                                 #
 #================================================================================#
 MY_LOGIN_NAME="smartxslogin"
