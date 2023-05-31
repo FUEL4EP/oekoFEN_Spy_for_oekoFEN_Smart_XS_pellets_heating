@@ -387,6 +387,13 @@ influx -execute 'show retention policies on "oekofen"'
 	+ your average burn time in winter mode should be > 150 minutes
 	+ at cold days, just one ignition may be necessary
 - summer mode is still under investigation at my side
+	+ in summer mode my current Pelletronic settings are:
+		* Water Temp Set: 70 deg C
+		* Water Temp Min: 30 deg C
+		* Water is heated up once a day for max. 2 hours in the morning
+		* usually we take a shower at the end of this heating time
+		* the return pump is switched on for 45 minutes during that time frame
+	+ as a first result, the average heat energy per day is about 13 kWh
 	+ a photovoltaics supplied heating rod is planned for summer mode
 - these are just recommendations, see **Disclaimer** below
 
