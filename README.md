@@ -1,6 +1,7 @@
 
 ## Set-up of a Raspberry Pi 3B+ based WiFi proxy server for Oekofen_Spy[![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/) [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FFUEL4EP%2FoekoFEN_Spy_for_oekoFEN_Smart_XS_pellets_heating&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com) <a href='https://ko-fi.com/FUEL4EP' target='_blank'><img height='20' style='border:0px;height:20px;' src='https://cdn.ko-fi.com/cdn/kofi1.png?v=2' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 
+- you can download this Github repository by clicking [here](https://github.com/FUEL4EP/oekoFEN_Spy_for_oekoFEN_Smart_XS_pellets_heating/archive/refs/heads/master.zip)
 - based on  [oekofen-spy](https://nc-x.com/oekofen-spy) (C) Peter Fuerle
 - and sources from https://gitlab.com/p3605/oekofen-spy/-/tree/main (C) Peter Fuerle
 - fitting to an OekoFEN Smart XS pellets heating
