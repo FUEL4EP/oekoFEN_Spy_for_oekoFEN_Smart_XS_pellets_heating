@@ -49,6 +49,8 @@ sudo systemctl disable dphys-swapfile
 sudo systemctl stop dphys-swapfile
 sudo systemctl status  dphys-swapfile
 
+sudo journalctl --vacuum-time=10d
+
 sudo apt autoremove
 
 sudo reboot
