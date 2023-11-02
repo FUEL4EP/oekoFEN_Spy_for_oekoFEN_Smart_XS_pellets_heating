@@ -359,6 +359,14 @@ influx -execute 'show retention policies on "oekofen"'
 
 - adapt the retention period to your needs
 
+## Freeze of Raspberry Pi due to a buggy Grafana upgrade
+
+- some grafana updates are causing a freeze of the Raspberry Pi, e.g. Grafana 10.2.0
+- in this case, restart the Raspberry Pi with a power cycle and login by ssh
+- then dowwngrade to a working grafana version, e.g. by
+
+> sudo apt install grafana=10.0.3
+
 ## Some recommendations for settings of the Oekofen Smart XS pellets heating
 - the initial settings of my freshly installed Oekofen Smart XS pellets heating resulted in too many unnecessary ignitions
 - for a minimum number of ignitions in winter mode, the following parameter settings turned out to be effective **for my system**:
