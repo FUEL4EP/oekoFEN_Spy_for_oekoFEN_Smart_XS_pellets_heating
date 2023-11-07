@@ -361,11 +361,16 @@ influx -execute 'show retention policies on "oekofen"'
 
 ## Freeze of Raspberry Pi due to a buggy Grafana upgrade
 
-- some grafana updates are causing a freeze of the Raspberry Pi, e.g. Grafana 10.2.0
+- some grafana updates are causing a freeze of the Raspberry Pi
 - in this case, restart the Raspberry Pi with a power cycle and login by ssh
 - then dowwngrade to a working grafana version, e.g. by
 
 > sudo apt install grafana=10.0.3
+
+## publish measurement data to a MQTT broker
+
+- on request, a python script for publishing a selection of measurement data to a MQTT broker can be provided
+- please rise a Github issue, if you have interest to get the script
 
 ## Some recommendations for settings of the Oekofen Smart XS pellets heating
 - the initial settings of my freshly installed Oekofen Smart XS pellets heating resulted in too many unnecessary ignitions
