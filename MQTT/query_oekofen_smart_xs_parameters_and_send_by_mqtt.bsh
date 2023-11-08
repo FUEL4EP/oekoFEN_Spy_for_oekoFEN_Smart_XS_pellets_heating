@@ -1,0 +1,138 @@
+#!/usr/bin/env python3
+#
+from influxdb import InfluxDBClient
+from datetime import datetime
+import paho.mqtt.client as mqtt               # ensure that this module is installed in your computer
+
+
+#MQTT parameters
+
+MAIN_TOPIC = "OekofenSmartXS"                 # adapt to your system
+BROKER_ADDRESS = "192.XXX.XXX.XXX"            # adapt to your MQTT broker#s IP address
+PORT = 1883
+QOS = 0
+
+
+host = "127.0.0.1"
+port = 8086
+user = "pellematic"                          # adapt to your system
+password = "smart"                           # adapt to your system
+dbname = "oekofen"                           # adapt to your system
+max_heating_power_of_smart_XS     = 10.7     # adapt to your system's parameters
+correction_factor_heating_power   = 1.25     # adapt to your system's parameters
+useful_heat_of_1_kg_pellets       = 4.8      # adapt to your system's parameters
+correction_factor_storage_fill    = 1.127    # adapt to your system's parameters
+cost_of_pellets_per_kg            = 0.56     # adapt to your system's parameters
+CO2_emission_per_kWh              = 0.017    # adapt to your system's parameters
+fine_dust_per_kWh                 = 0.05     # adapt to your system's parameters
+sampling_interval                 = 4        # adapt to your system's parameters
+
+NUMBER_OF_DIGITS                  = 2
+
+
+def run_mqtt_transmit( identifier, value ):
+    rounded_value = round( value,  NUMBER_OF_DIGITS)
+    mqtt_client.publish(MAIN_TOPIC + '/' + identifier, rounded_value, qos=QOS)
+    print(rounded_value)
+
+def run_influxdb_key_query_and_mqtt_transmit( query, key, identifier ):
+    result = influxdb_client.query(query)
+    points = result.get_points()
+    value = next(points)[key]
+    run_mqtt_transmit( identifier, value )
+    return value
+
+
+
+def on_pre_connect(influxdb_client,data):
+   return
+
+mqtt_client = mqtt.Client()
+mqtt_client.on_pre_connect=on_pre_connect
+mqtt_client.connect(BROKER_ADDRESS, PORT,30)
+
+now = datetime.now()
+# print(now.strftime("%Y-%m-%d, %H:%M:%S"))
+
+# Influx Datenbank verbinden
+influxdb_client = InfluxDBClient(host, port, user, password, dbname)
+influxdb_client.switch_database(dbname)
+
+# Daten aus der Datenbank abrufen
+
+# Heizenergie in den letzten 24 Stunden
+my_query = 'SELECT mean("pe1_L_modulation") * ' + str(max_heating_power_of_smart_XS) + '/ 100 * 24 * ' + str(correction_factor_heating_power) + 'FROM "' + dbname + '" WHERE time >= now() - 24h'
+ma_energy_last_24h = run_influxdb_key_query_and_mqtt_transmit(my_query, "mean", 'heat_energy_last_24h')
+
+
+#mittlere Heizleistung in den letzten 24 Stunden
+ma_heating_power_last_24h = ma_energy_last_24h / 24
+run_mqtt_transmit( 'average_heating_power_last_24h', ma_heating_power_last_24h )
+
+#verbrauchte Pellets in den letzten 24 Stunden
+
+ma_burned_pellets_last_24h = ma_energy_last_24h / useful_heat_of_1_kg_pellets
+run_mqtt_transmit( 'burned_pellets_last_24h', ma_burned_pellets_last_24h )
+
+
+#Heizkosten letzte 24 Stunden
+cost_burned_pellets_last_24h = ma_burned_pellets_last_24h * cost_of_pellets_per_kg
+run_mqtt_transmit( 'heating_costs_last_24h', cost_burned_pellets_last_24h )
+
+#CO2 Ausstoß letzte 24 Stunden
+CO2_emisions_last_24h = ma_energy_last_24h * CO2_emission_per_kWh
+run_mqtt_transmit( 'CO2_emisions_last_24h',CO2_emisions_last_24h )
+
+#Laufzeit letzte 24 Stunden
+my_query = 'SELECT count("pe1_L_modulation") * ' + str(sampling_interval) + ' / 60 FROM "' + dbname + '" WHERE "pe1_L_modulation" > 0 AND time >= now() - 24h'
+runtime_last_24h = run_influxdb_key_query_and_mqtt_transmit(my_query, "count", 'runtime_last_24h')
+
+
+
+#Starts letzte 48 Stunden
+my_query = 'SELECT COUNT("difference") FROM (SELECT difference("pe1_L_starts") FROM ' + dbname + ' WHERE time >= now() - 48h)  WHERE "difference" > 0'
+starts_last_48h = run_influxdb_key_query_and_mqtt_transmit(my_query, "count", 'starts_last_48h')
+
+#Starts letzte 24 Stunden
+my_query = 'SELECT COUNT("difference") FROM (SELECT difference("pe1_L_starts") FROM ' + dbname + ' WHERE time >= now() - 24h)  WHERE "difference" > 0'
+starts_last_24h = run_influxdb_key_query_and_mqtt_transmit(my_query, "count", 'starts_last_24h')
+
+#mittlere Laufzeit letzte 24 Stunden
+average_runtime_last_24h = runtime_last_24h / starts_last_24h * 60
+run_mqtt_transmit( 'average_runtime_last_24h', average_runtime_last_24h )
+
+#mittlere Laufzeit insgesamt
+my_query = 'SELECT LAST("pe1_L_avg_runtime") FROM  ' + dbname
+average_runtime_total = run_influxdb_key_query_and_mqtt_transmit(my_query, "last", 'average_runtime_total')
+
+
+average_runtime_total = runtime_last_24h / starts_last_24h * 60
+run_mqtt_transmit( 'average_runtime_last_24h', average_runtime_last_24h )
+
+#mittlere Vorlauftemperatur letzte 24 Stunden
+my_query = 'SELECT MEAN("hk1_L_flowtemp_act") FROM  ' + dbname + ' WHERE time >= now() - 24h'
+average_flowtemp_last_24h = run_influxdb_key_query_and_mqtt_transmit(my_query, "mean", 'average_flowtemp_last_24h')
+
+#aktuelle Vorlauftemperatur
+my_query = 'SELECT LAST("hk1_L_flowtemp_act") FROM  ' + dbname 
+current_flowtemp = run_influxdb_key_query_and_mqtt_transmit(my_query, "last", 'current_flowtemp')
+
+#aktuelle Warmwassertemperatur
+my_query = 'SELECT LAST("ww1_L_ontemp_act") FROM  ' + dbname 
+current_hot_water_temp = run_influxdb_key_query_and_mqtt_transmit(my_query, "last", 'current_hot_water_temp')
+
+#minimale Warmwassertemperatur letzte 24h
+my_query = 'SELECT MIN("ww1_L_ontemp_act") FROM  ' + dbname + ' WHERE time >= now() - 24h'
+min_hot_water_temp = run_influxdb_key_query_and_mqtt_transmit(my_query, "min", 'min_hot_water_temp')
+
+#maximale Warmwassertemperatur letzte 24h
+my_query = 'SELECT MAX("ww1_L_ontemp_act") FROM  ' + dbname + ' WHERE time >= now() - 24h'
+max_hot_water_temp = run_influxdb_key_query_and_mqtt_transmit(my_query, "max", 'max_hot_water_temp')
+
+#aktueller Pelletsvorrat
+my_query = 'SELECT LAST("pe1_L_storage_fill") / 1000 FROM  ' + dbname 
+current_pellets_storage = run_influxdb_key_query_and_mqtt_transmit(my_query, "last", 'current_pellets_storage')
+
+
+mqtt_client.disconnect()
+

@@ -369,8 +369,9 @@ influx -execute 'show retention policies on "oekofen"'
 
 ## publish measurement data to a MQTT broker
 
-- on request, a python script for publishing a selection of measurement data to a MQTT broker can be provided
-- please rise a Github issue, if you have interest to get the script
+- an example python script for publishing a selection of measurement data to a MQTT broker is provided [here](./MQTT/query_oekofen_smart_xs_parameters_and_send_by_mqtt.bsh)
+- please adapt it to your needs, see comments inside
+- this script can be periodically invoked by a cron process, e.g. once a day
 
 ## Some recommendations for settings of the Oekofen Smart XS pellets heating
 - the initial settings of my freshly installed Oekofen Smart XS pellets heating resulted in too many unnecessary ignitions
