@@ -372,6 +372,7 @@ influx -execute 'show retention policies on "oekofen"'
 - an example python script for publishing a selection of measurement data to a MQTT broker is provided [here](./MQTT/query_oekofen_smart_xs_parameters_and_send_by_mqtt.bsh)
 - please adapt it to your needs, see comments inside
 - this script can be periodically invoked by a cron process, e.g. once a day
+- an exmple of a Homematic / RaspberryMatic integration is shown [here](https://homematic-forum.de/forum/viewtopic.php?f=85&t=80504#p783979) (German language)
 
 ## Some recommendations for settings of the Oekofen Smart XS pellets heating
 - the initial settings of my freshly installed Oekofen Smart XS pellets heating resulted in too many unnecessary ignitions
