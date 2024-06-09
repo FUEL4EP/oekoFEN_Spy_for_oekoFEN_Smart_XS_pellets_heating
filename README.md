@@ -374,6 +374,19 @@ influx -execute 'show retention policies on "oekofen"'
 - this script can be periodically invoked by a cron process, e.g. once a day
 - an exmple of a Homematic / RaspberryMatic integration is shown [here](https://homematic-forum.de/forum/viewtopic.php?f=85&t=80504#p783979) (German language)
 
+## error messages of iPad Safari browser when accessing the Grafana server
+
+- if you are experiencing this error message on your iPad / iPhone
+
+  ![png](./grafana_error_message_iPad.png)
+
+  your iOS / iPadOS version is too outdated.
+- I got such a message on my iPad with iPadOS 15.8.2 since upgrade to Grafana 11.0
+- Possible fixes are:
+	+ Upgrade the OS version if possible
+	+ Buy a newer iPhone / iPad
+	+ downgrade the Grafana version
+
 ## Some recommendations for settings of the Oekofen Smart XS pellets heating
 - the initial settings of my freshly installed Oekofen Smart XS pellets heating resulted in too many unnecessary ignitions
 - for a minimum number of ignitions in winter mode, the following parameter settings turned out to be effective **for my system**:
