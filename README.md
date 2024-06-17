@@ -386,6 +386,8 @@ influx -execute 'show retention policies on "oekofen"'
 	+ Upgrade the OS version if possible
 	+ Buy a newer iPhone / iPad
 	+ downgrade the Grafana version
+- the latest Grafana version is supporting the latest two major browser versions, i.e. in case of iPadOS Safari 17 and Safari 16:
+- https://github.com/grafana/grafana/blob/main/.browserslistrc
 
 ## Some recommendations for settings of the Oekofen Smart XS pellets heating
 - the initial settings of my freshly installed Oekofen Smart XS pellets heating resulted in too many unnecessary ignitions
