@@ -428,6 +428,26 @@ influx -execute 'show retention policies on "oekofen"'
 	+ a photovoltaics supplied heating rod is planned for summer mode
 - these are just recommendations, see **Disclaimer** below
 
+## Capturing and analyzing the annual consumption of thermal energy dissipation
+
+- I am using my Python script [consal](https://github.com/FUEL4EP/consumption_analysis) for capturing and analyze the annual thermal heat dissipation
+- inputs are the manually read and entered thermal energies of my heating system's heat meter
+- just download the [ZIP](https://github.com/FUEL4EP/consumption_analysis/archive/refs/heads/master.zip) from Github for installing the software to your Linux computer.
+![png](./thermal_enegrgy_from_pellets_365_days_moving_average.png)
+
+## Maintenance of yuor system
+
+- Please check on a regular basis every few months the disc usage level of your Raspberry Pi. Login with ssh for that purpose and execute the commands
+>  #check the disc usage (should be <~70%)   
+df .  
+>  #change to root directory  
+> cd /
+> #check for biggest files/directories  
+sudo du -k | sort -n +0 -1
+  
+- check for outdated and big journal files in 'var/log/journal/' and delete them as needed
+
+
 ## Mistakes or incompleteness of this recipe
 - please help to improve this repository by raising a Github issue if you find any deficiency. Thanks a lot in advance.
 - as said, I could not validate all instructions of this recipe, but most 
